@@ -1,6 +1,7 @@
 #include <iostream>
 #include <WinSock2.h>
-#include <thread> // Include the thread header
+#include <thread>
+#include <vector> // Include the vector header for managing threads
 
 #pragma comment(lib, "ws2_32.lib")
 
@@ -10,8 +11,6 @@ public:
         std::string message = "Hello from server";
         if (send(client_socket, message.c_str(), message.length(), 0) == SOCKET_ERROR) {
             std::cerr << "Send failed with error: " << WSAGetLastError() << std::endl;
-            closesocket(client_socket);
-            return;
         }
         closesocket(client_socket);
     }
@@ -55,6 +54,8 @@ int main() {
 
     std::cout << "Server is listening on port " << port << std::endl;
 
+    std::vector<std::thread> threads; // Vector to store threads
+
     while (true) {
         sockaddr_in client_addr;
         int client_addr_len = sizeof(client_addr);
@@ -67,11 +68,16 @@ int main() {
         }
 
         Server server;
-        std::thread t(server, client_socket);
-        t.detach();
+        // Launch thread and store it in the vector
+        threads.emplace_back(server, client_socket);
     }
 
-    // Close the server socket (this part of the code is unreachable)
+    // Join all threads before exiting
+    for (auto& t : threads) {
+        t.join();
+    }
+
+    // Close the server socket
     closesocket(server_socket);
 
     // Cleanup Winsock
