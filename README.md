@@ -107,8 +107,6 @@ Happy Coding!
 
 ## Contact
 
-For any inquiries or support, please contact [Your Name] at [Your Email].
+For any inquiries or support, please contact Aman Sharma at amn.10.sharma@gmail.com .
 
----
 
-**End of README**
